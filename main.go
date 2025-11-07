@@ -1,52 +1,37 @@
 package main
 
 import (
-	"fmt"
+	"github.com/mindwingx/fast-project/pkg"
+	"github.com/mindwingx/fast-project/process"
 	"os"
-	"prj-init/CoR"
-	"prj-init/pkg"
 )
 
 func main() {
+	path, _ := os.Getwd()
+
+	items := process.NewItems()
+	items.SetReader(*pkg.NewStd())
+	items.SetPath(path)
+
 	var (
-		reader  = pkg.NewStd()
-		path, _ = os.Getwd()
+		processes   = items.Process()
+		setTitle    = processes.SetTitle()
+		approvePath = processes.ApprovePath()
+		setDirName  = processes.SetDirName()
+		makeDir     = processes.MakeDir()
+		createFile  = processes.CreateFile()
+		serviceInit = processes.ServiceInit()
+		gitInit     = processes.GitInit()
 	)
 
-	title, slug, ok := CoR.SetProjectTitle(reader)
-	if !ok {
-		return
+	{
+		approvePath.Next(&setTitle)
+		setTitle.Next(&setDirName)
+		setDirName.Next(&makeDir)
+		makeDir.Next(&createFile)
+		createFile.Next(&serviceInit)
+		serviceInit.Next(&gitInit)
 	}
 
-	path, ok = CoR.ApprovePath(reader, path)
-	if !ok {
-		return
-	}
-
-	path, ok = CoR.SetDirName(path, slug)
-	if !ok {
-		return
-	}
-
-	ok = CoR.MakeDir(path)
-	if !ok {
-		return
-	}
-
-	ok = CoR.CreateFiles(path, title)
-	if !ok {
-		return
-	}
-
-	ok = CoR.InitService(path, slug)
-	if !ok {
-		return
-	}
-
-	ok = CoR.InitGit(path)
-	if !ok {
-		return
-	}
-
-	fmt.Println("✅ project initialized!")
+	approvePath.Process(*items)
 }

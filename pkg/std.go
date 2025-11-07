@@ -16,7 +16,7 @@ func NewStd() *Std {
 }
 
 func (s *Std) Ask(question string, params ...string) string {
-	q := "▶️ " + question + " "
+	q := "🎯  " + question + " "
 
 	if len(params) > 0 {
 		fmt.Printf(q, params)
