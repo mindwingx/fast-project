@@ -15,11 +15,11 @@ func NewStd() *Std {
 	return &Std{reader: bufio.NewReader(os.Stdin)}
 }
 
-func (s *Std) Ask(question string, params ...string) string {
+func (s *Std) Ask(question string, params ...any) string {
 	q := "🎯  " + question + " "
 
 	if len(params) > 0 {
-		fmt.Printf(q, params)
+		fmt.Printf(q, params...)
 	} else {
 		fmt.Print(q)
 	}
